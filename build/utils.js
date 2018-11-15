@@ -3,6 +3,7 @@ const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
+const glob = require('glob')
 
 exports.assetsPath = function (_path) {
   const assetsSubDirectory = process.env.NODE_ENV === 'production'
@@ -98,4 +99,21 @@ exports.createNotifierCallback = () => {
       icon: path.join(__dirname, 'logo.png')
     })
   }
+}
+
+exports.getMultiEntry = globPath => {
+  const entries = {};
+  let basename, tmp, pathname;
+  glob.sync(globPath).forEach(entry => {
+    basename = path.basename(entry, path.extname(entry));
+    tmp = entry.split('/').splice(-4);
+
+    let pathsrc = tmp[0] + '/' + tmp[1];
+    if (tmp[0] == 'src') {
+      pathsrc = tmp[1];
+    }
+    pathname = pathsrc + '/' + basename;
+    entries[pathname] = entry;
+  })
+  return entries;
 }
