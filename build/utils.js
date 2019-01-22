@@ -106,13 +106,15 @@ exports.getMultiEntry = globPath => {
   let basename, tmp, pathname;
   glob.sync(globPath).forEach(entry => {
     basename = path.basename(entry, path.extname(entry));
-    tmp = entry.split('/').splice(-4);
+    let entrysplit = entry.split('/');
+    tmp = entrysplit.splice(-3);
 
     let pathsrc = tmp[0] + '/' + tmp[1];
     if (tmp[0] == 'src') {
       pathsrc = tmp[1];
     }
     pathname = pathsrc + '/' + basename;
+    pathname = pathname.replace('page/', '');
     entries[pathname] = entry;
   })
   return entries;

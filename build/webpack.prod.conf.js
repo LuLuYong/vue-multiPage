@@ -25,9 +25,12 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   devtool: config.build.productionSourceMap ? config.build.devtool : false,
   output: {
-    path: config.build.assetsRoot,
-    filename: utils.assetsPath('js/[name].[chunkhash].js'),
-    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    // path: config.build.assetsRoot,
+    path: path.resolve(__dirname, '../dist'),
+    // filename: utils.assetsPath('js/[name].[chunkhash].js'),
+    filename: '[name].[chunkhash].js',
+    // chunkFilename: utils.assetsPath('js/[id].[chunkhash].js')
+    chunkFilename: '[id].[chunkhash].js'
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -45,7 +48,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     }),
     // extract css into its own file
     new ExtractTextPlugin({
-      filename: utils.assetsPath('css/[name].[contenthash].css'),
+      // filename: utils.assetsPath('css/[name].[contenthash].css'),
+      filename: '[name].[contenthash].css',
       // Setting the following option to `false` will not extract CSS from codesplit chunks.
       // Their CSS will instead be inserted dynamically with style-loader when the codesplit chunk has been loaded by webpack.
       // It's currently set to `true` because we are seeing that sourcemaps are included in the codesplit bundle as well when it's `false`,
@@ -123,17 +127,24 @@ const webpackConfig = merge(baseWebpackConfig, {
   ]
 })
 
-const pages =  utils.getMultiEntry('./src/' + config.moduleName + '/**/*.html');
+const pages =  utils.getMultiEntry('./src/' + config.moduleName + '/**/index.html');
 
 for (let pathname in pages) {
+  let filename = pathname.replace('page/', '')
+  let key = pathname.split('/');
+  key.splice(key.length -1, 1, 'main');
+  key = key.join('/');
+  console.log(key);
+  // key = key.replace('page/', '');
 
   let conf = {
 
-    filename: pathname + '.html',
+    // filename: pathname + '/index.html',
+    filename: path.resolve(__dirname, '../dist/' + filename + '.html'),
 
     template: pages[pathname], // 模板路径
 
-    chunks: ['manifest', 'vendor',pathname], // 每个html引用的js模块，注意公共模板的引入
+    chunks: ['manifest', 'vendor', key], // 每个html引用的js模块，注意公共模板的引入
 
     inject: true,              // js插入位置
 
